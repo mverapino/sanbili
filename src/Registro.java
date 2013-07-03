@@ -2,9 +2,9 @@
 public class Registro {
 
 	public double[] reg;
-	public double clase;
+	public int clase;
 	
-	public Registro(double[] reg, double clase) {
+	public Registro(double[] reg, int clase) {
 		this.reg= reg;
 		this.clase =clase;
 	}
