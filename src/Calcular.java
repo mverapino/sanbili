@@ -23,7 +23,7 @@ public class Calcular {
 	public static double Gain (Nodo raiz, ArrayList<ArrayList<Registro>> subsets){
 		double sum=0;
 		for(ArrayList<Registro> subset: subsets){
-			double entropia =entropia(subset);
+			double entropia = entropia(subset);
 			sum = sum+ (subset.size()/(double)raiz.setDeRegistros.size()*entropia(subset));
 		}
 		return raiz.entropia-sum;

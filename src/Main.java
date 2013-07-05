@@ -1,6 +1,7 @@
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
@@ -11,14 +12,14 @@ import com.sun.media.jai.iterator.RandomIterCSMDouble;
 public class Main {
 	public static int[] clases;
 	public static double[] threshold;
-	public Main() {
-		
-	}
+	public static int minimoEnNodo;
+
 	/**
 	 * @param args
 	 * @throws FileNotFoundException 
 	 */
 	public static void main(String[] args)  {
+		minimoEnNodo= 0;
 		ArrayList<Registro>registros = null;
 		try{
 			registros= leerArchivo(args[0]);
@@ -30,9 +31,44 @@ public class Main {
 		if (registros==null) return;
 		Main.setThreshold();
 		Main.SetAndCountClasses(registros);
+		Collections.shuffle(registros);
+		
 		Arbol tree = new Arbol(registros);
-		tree.crearArbol(tree.root);
-		Nodo ver =tree.root;
+		
+		tree.crearArbol();
+		tree.printTree();
+		//System.out.println(crossValidation(registros,2));
+//		double[] arr = {1.0,1.0,0.0};
+//		System.out.println(tree.testRegistro(new Registro(arr,2)));
+		
+	}
+	public static double crossValidation(ArrayList<Registro> registros, int k){
+		ArrayList<ArrayList<Registro>>  subsamples= new ArrayList<ArrayList<Registro>>();
+		int countPerSample= registros.size()/k;
+		int count=0;
+		int index=0;
+		for (int i = 0;i<k;i++){
+			ArrayList<Registro> subsample = new ArrayList<Registro>();
+			for(int j = index;j<registros.size()&&count<countPerSample;j++){
+				subsample.add(registros.get(j));
+				count++;
+				index++;
+			}
+			count=0;
+			subsamples.add(subsample);
+		}
+		double crossValidationResult = 0;
+		for(ArrayList<Registro> subsample: subsamples){
+			double suma=0;
+			Arbol tree = new Arbol(subsample);
+			tree.crearArbol();
+			for(ArrayList<Registro> testSample: subsamples){
+				if(subsample==testSample) continue;
+				suma += tree.testTree(testSample);
+			}
+			crossValidationResult += suma/(double)(k-1);
+		}
+		return crossValidationResult/k;
 		
 	}
 	private static void SetAndCountClasses(ArrayList<Registro> registros) {
@@ -90,6 +126,7 @@ public class Main {
 		scan.close();
 		return registros;
 	}
+	
 	public static void setThresholdMedio(List<Registro> registros){
 		double[] min = registros.get(1).reg.clone();
 		double[] max = registros.get(1).reg.clone();

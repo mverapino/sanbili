@@ -4,12 +4,14 @@ import java.util.List;
 
 public class Nodo {
 	public ArrayList<Registro> setDeRegistros;
-	Nodo[] ramas;
+	public Nodo[] ramas;
+	public boolean[] AtributoOcupado;
 	double clase=-1;
 	int atributo=-1;
 	double entropia;
 	public Nodo(ArrayList<Registro> reg) {
 		this.setDeRegistros = reg;
+		AtributoOcupado = new boolean[Main.threshold.length];
 	}
 
 	/**
